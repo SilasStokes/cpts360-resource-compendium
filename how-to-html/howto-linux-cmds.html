@@ -1,0 +1,659 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>How-To Linux Command Guide</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 3px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	text-indent: -1.7em;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+}
+
+.simple-table-header {
+	background: rgb(247, 246, 243);
+	color: black;
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-block;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1.25em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(55, 53, 47, 1);
+}
+.highlight-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(145, 145, 142, 1);
+}
+.highlight-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(187, 132, 108, 1);
+}
+.highlight-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(215, 129, 58, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 148, 51, 1);
+}
+.highlight-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(108, 155, 125, 1);
+}
+.highlight-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(91, 151, 189, 1);
+}
+.highlight-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(167, 130, 195, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(205, 116, 159, 1);
+}
+.highlight-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(225, 111, 100, 1);
+}
+.highlight-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.highlight-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.highlight-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.highlight-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.highlight-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.highlight-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.highlight-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.highlight-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.highlight-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(145, 145, 142, 1);
+}
+.block-color-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(187, 132, 108, 1);
+}
+.block-color-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(215, 129, 58, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 148, 51, 1);
+}
+.block-color-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(108, 155, 125, 1);
+}
+.block-color-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(91, 151, 189, 1);
+}
+.block-color-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(167, 130, 195, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(205, 116, 159, 1);
+}
+.block-color-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(225, 111, 100, 1);
+}
+.block-color-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.block-color-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.block-color-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.block-color-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.block-color-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.block-color-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.block-color-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.select-value-color-pink { background-color: rgba(245, 224, 233, 1); }
+.select-value-color-purple { background-color: rgba(232, 222, 238, 1); }
+.select-value-color-green { background-color: rgba(219, 237, 219, 1); }
+.select-value-color-gray { background-color: rgba(227, 226, 224, 1); }
+.select-value-color-orange { background-color: rgba(250, 222, 201, 1); }
+.select-value-color-brown { background-color: rgba(238, 224, 218, 1); }
+.select-value-color-red { background-color: rgba(255, 226, 221, 1); }
+.select-value-color-yellow { background-color: rgba(253, 236, 200, 1); }
+.select-value-color-blue { background-color: rgba(211, 229, 239, 1); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="ecf0457b-51f1-4f63-972e-718b94262e0c" class="page sans"><header><h1 class="page-title">How-To Linux Command Guide</h1></header><div class="page-body"><div id="850554f9-c587-43b2-99e6-d5f81d12f63a" class="column-list"><div id="b48c7ce7-3137-4d6d-8566-f09b7ad5244e" style="width:50%" class="column"><p id="494a60e1-5d36-45cc-9be7-629877390825" class=""><strong>Written by:</strong> Zach Nett</p></div><div id="a1419418-02fb-42ac-a4dd-2a3256959faa" style="width:50%" class="column"><p id="649d3e80-ccd9-4bee-a667-1ece50ce7c6e" class=""><strong>Last edited: </strong>January 14, 2022</p></div></div><hr id="421eadf0-064d-4cff-b3f9-aa36a7c407bf"/><p id="1ce2261f-ded9-4c23-8efb-ec6851ca89f9" class="">Hello! This page serves as a tutorial for several useful Linux/UNIX commands and features that are either necessary or extremely helpful for this course.</p><p id="5b6a175b-b1ee-4d5c-af4c-4cd9732d5470" class="">Note the content of this guide assumes relative beginner knowledge about Linux (and certain utilities such as Git) and is therefore written to be as accessible as possible.</p><p id="93bf4e4e-d103-4ec5-8514-3fb96c8fb298" class="block-color-teal">To begin, simply click a question in the Table of Contents below!</p><hr id="05a3feca-3258-4108-a2ea-7351ff425e63"/><p id="00552d2c-e5b0-4cd2-babf-9f5e07d7bf8f" class=""><strong>Table of Contents:</strong></p><nav id="bf272151-1802-4cb5-b700-08b18bc7458a" class="block-color-gray table_of_contents"><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#f77bf5e2-c9fd-4485-9cf1-6acf10ad7bae">How do I download a file from the website?</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#24efa61c-6f13-49fc-a988-779143122cfc">How do I run a program/executable?</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#084086d1-0eac-403e-82a5-cb7c1f664651">How do I use Git/GitHub Classroom?</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#1b9544a7-eff7-4fee-a797-1532e140f965">How do I use XYZ Linux command?</a></div></nav><hr id="8cfc9d29-5c12-45b0-b304-8f6ee725bcc5"/><h2 id="f77bf5e2-c9fd-4485-9cf1-6acf10ad7bae" class="">How do I download a file from the website?</h2><p id="256b8c5d-b95f-4519-b395-e65efb840dd6" class="">The sample code and/or executables may be downloaded from the course website, specifically at the following URL: <a href="https://eecs.wsu.edu/~cs360/samples/">https://eecs.wsu.edu/~cs360/samples/</a></p><p id="111a29ce-9d6d-4c6f-b088-b71e8890aa21" class="">You may notice the webpage looks something like this:</p><figure id="3c36a65d-7e0a-41e9-9f7a-2f6931bcf2ac" class="image"><a href="How-To%20Linux%20Command%20Guide%203c36a65d7e0a41e99f7a2f6931bcf2ac/Untitled.png"><img style="width:541px" src="How-To%20Linux%20Command%20Guide%203c36a65d7e0a41e99f7a2f6931bcf2ac/Untitled.png"/></a></figure><p id="adff008c-6e1b-494e-af57-8c5509b4cf43" class="">Let’s say you want to download the <code>a.out</code> executable and <code>out</code> text file from the <code>LAB1pre/</code> directory. Let’s click on <code>LAB1pre/</code> and see its contents:</p><figure id="e6109eb0-116d-4b93-bd53-da8a958fcf68" class="image"><a href="How-To%20Linux%20Command%20Guide%203c36a65d7e0a41e99f7a2f6931bcf2ac/Untitled%201.png"><img style="width:548px" src="How-To%20Linux%20Command%20Guide%203c36a65d7e0a41e99f7a2f6931bcf2ac/Untitled%201.png"/></a></figure><p id="9a1af555-4c47-449d-9570-bd0f6d755aca" class="">There are a few ways we can download these files. The first way is to use the <code>curl</code> command:</p><pre id="3aae0ab3-d143-4896-9943-32fec166a0c8" class="code"><code>curl &lt;URL&gt; --output &lt;filename&gt;</code></pre><p id="e775f3b4-77e1-454f-ae5a-5c192b64983e" class="">For this, we must include the name of the file we’re downloading in the URL we provide <code>curl</code>. For example, if we want to download <code>a.out</code>, it would look like this:</p><pre id="61139eb8-5638-402d-a6dc-84ef50f2e54d" class="code"><code>curl https://eecs.wsu.edu/~cs360/samples/LAB1pre/a.out --output a.out</code></pre><p id="882fb59f-fc6a-418d-8df4-ad51b7432786" class="">Similarly, to download <code>out</code>,</p><pre id="9cf1beb2-a334-4e5f-9537-b618d521ef98" class="code"><code>curl https://eecs.wsu.edu/~cs360/samples/LAB1pre/out --output out</code></pre><p id="14c937cb-17c6-46e1-b912-9d0dafa6bcc8" class="">A perhaps simpler way is to use <code>wget</code> (you can run <code>sudo apt-get install wget</code> if it is not already installed):</p><pre id="51060f0a-7020-49cb-af22-c9c2e678fac3" class="code"><code>wget https://eecs.wsu.edu/~cs360/samples/LAB1pre/a.out</code></pre><p id="582c1758-9b83-4917-b91c-4c590f5afb0b" class="">After you do this command, you should see the following in your directory:</p><figure id="05abfc96-772b-41a5-831e-4f31714616c9" class="image"><a href="How-To%20Linux%20Command%20Guide%203c36a65d7e0a41e99f7a2f6931bcf2ac/02CFDC23-319B-4E47-8DF8-5881229C4092.png"><img style="width:1340px" src="How-To%20Linux%20Command%20Guide%203c36a65d7e0a41e99f7a2f6931bcf2ac/02CFDC23-319B-4E47-8DF8-5881229C4092.png"/></a></figure><hr id="eca50d72-9e13-410e-b936-280e1ec3fb7e"/><h2 id="24efa61c-6f13-49fc-a988-779143122cfc" class="">How do I run a program/executable?</h2><p id="dd8c5ca9-4dc7-4ea3-ad4b-9b6d7f3253a4" class="">In order to run a program, you need to type <code>./</code> before the name of the executable. Therefore, to run <code>a.out</code>, you must type:</p><pre id="56e75d07-ff19-43d6-8773-77d605188e6f" class="code"><code>./a.out</code></pre><p id="9c8db346-664d-461e-b280-d4cbf8233653" class="">However, without further action upon downloading the executable, you may notice the following error:</p><figure id="99625437-f1db-4430-ac42-3f234d0aa8a5" class="image"><a href="How-To%20Linux%20Command%20Guide%203c36a65d7e0a41e99f7a2f6931bcf2ac/8D157446-D815-42EA-A4AA-151F7AA8297A.png"><img style="width:1340px" src="How-To%20Linux%20Command%20Guide%203c36a65d7e0a41e99f7a2f6931bcf2ac/8D157446-D815-42EA-A4AA-151F7AA8297A.png"/></a></figure><p id="812aeb3f-838e-4496-87cb-89e3e83806a8" class="">This is because you do not have permission to run this program by default. To give yourself permission, you must use the <code>chmod</code> command:</p><pre id="ddf8d7d9-9ba8-4177-a3e1-68f8669411f2" class="code"><code>chmod +x &lt;filename&gt;</code></pre><p id="f2c6d74a-04e8-4c38-ba15-4bff0e757c6b" class="">The <code>+x</code> flag gives all user groups in Linux permission to execute a given executable. You can see this in the permission bits of the file (on the left side) before and after running <code>chmod +x</code>:</p><figure id="a72754b5-14e6-478a-a1c6-3ddf92d4ba02" class="image"><a href="How-To%20Linux%20Command%20Guide%203c36a65d7e0a41e99f7a2f6931bcf2ac/2669E010-5481-4A1F-AD70-B99ED48AE870.png"><img style="width:1340px" src="How-To%20Linux%20Command%20Guide%203c36a65d7e0a41e99f7a2f6931bcf2ac/2669E010-5481-4A1F-AD70-B99ED48AE870.png"/></a></figure><p id="56626e3c-d97f-45ae-8628-03a0b595b65d" class="">Now running the command via <code>./a.out</code> should work.</p><hr id="343a5c61-4f94-438b-97d3-683f7dd4c15e"/><h2 id="084086d1-0eac-403e-82a5-cb7c1f664651" class="">How do I use Git/GitHub Classroom?</h2><p id="ad054369-bde1-4520-a3ed-f90f47aa8ab5" class="">On the Canvas or course webpage, click the “accept” link for each relevant assignment. You should see a screen like this:</p><figure id="4658d3b2-a3e3-43dd-89bd-c78d80bfa0d4" class="image"><a href="How-To%20Linux%20Command%20Guide%203c36a65d7e0a41e99f7a2f6931bcf2ac/A50F4C5F-2D50-4BBD-95BE-1909F610AB6E.png"><img style="width:1920px" src="How-To%20Linux%20Command%20Guide%203c36a65d7e0a41e99f7a2f6931bcf2ac/A50F4C5F-2D50-4BBD-95BE-1909F610AB6E.png"/></a></figure><p id="25e6bcd8-0fae-4453-9b3e-eb67fae75905" class="">Click <mark class="highlight-teal"><strong>Accept this assignment</strong></mark>. This will clone a template repository for that assignment. After a second, you should be able to refresh and see a link to your repository. Simply click the link.</p><figure id="e0cacd7d-a5b0-4729-b26e-4c12994cd723" class="image"><a href="How-To%20Linux%20Command%20Guide%203c36a65d7e0a41e99f7a2f6931bcf2ac/0431C70D-A0C3-4196-B8DF-945961A84162.png"><img style="width:1920px" src="How-To%20Linux%20Command%20Guide%203c36a65d7e0a41e99f7a2f6931bcf2ac/0431C70D-A0C3-4196-B8DF-945961A84162.png"/></a></figure><p id="c39ba67c-2fac-4229-afdd-da1928f9ea95" class="">Your repository by default should look something like the following:</p><figure id="435ff529-75a5-49fd-bf24-df4c4301ba0f" class="image"><a href="How-To%20Linux%20Command%20Guide%203c36a65d7e0a41e99f7a2f6931bcf2ac/EF33A1F8-91D5-40DE-820D-7F23CD536523.png"><img style="width:1410px" src="How-To%20Linux%20Command%20Guide%203c36a65d7e0a41e99f7a2f6931bcf2ac/EF33A1F8-91D5-40DE-820D-7F23CD536523.png"/></a></figure><p id="8c30aed4-43f4-441b-9706-fa0217467df9" class="">At this point, you will want to clone (download) the repository so you may work on it on your own computer. Since we are using Git for version control, you will use Git commands to accomplish this.</p><p id="ab07d980-0cb3-4810-8421-51cc8a9e1a86" class="">To download the template repository, use the <code>git clone</code> command in the terminal:</p><pre id="1c4abac7-a4b2-400b-a875-b645200945fd" class="code"><code>git clone &lt;URL&gt;</code></pre><p id="22faf2c5-d171-4d2a-af76-e83b0224d968" class="">where the URL is your repository URL. In my case, it would be the following:</p><pre id="fff27e80-62c6-48ae-84ea-bf8765da0da3" class="code"><code>git clone https://github.com/cpts-360-spring22/github-test-assignment-zjnett</code></pre><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="1ec098c0-9aa7-435a-90b8-dfacd2c4f1b9"><div style="font-size:1.5em"><span class="icon">❗</span></div><div style="width:100%"><mark class="highlight-red"><strong>NOTE: You will use YOUR OWN repository URL instead of mine.</strong></mark></div></figure><p id="a7b261f0-d752-43d4-80ca-4d9698a653a6" class="">(Tip: you can use <code>CTRL+Shift+V</code> to paste text into a Linux terminal.)</p><p id="a9343c8c-0efd-412f-b63c-46e7ce981d6f" class="">Also note this command may have you sign in to your GitHub account. If you have not already set up a personal access token (or SSH key), you will need to do so (see <a href="https://github.blog/2020-12-15-token-authentication-requirements-for-git-operations/">here</a> for more info).</p><figure id="894f7442-cc72-4110-9976-8ea1b25a4f41" class="image"><a href="How-To%20Linux%20Command%20Guide%203c36a65d7e0a41e99f7a2f6931bcf2ac/F67FF225-F000-4B1D-BDFC-A14F08CB0A12.png"><img style="width:1340px" src="How-To%20Linux%20Command%20Guide%203c36a65d7e0a41e99f7a2f6931bcf2ac/F67FF225-F000-4B1D-BDFC-A14F08CB0A12.png"/></a></figure><figure id="2d3b1cf0-946f-496f-a93e-fb4445629781" class="image"><a href="How-To%20Linux%20Command%20Guide%203c36a65d7e0a41e99f7a2f6931bcf2ac/EC34BAEF-C5D4-4704-BB57-54FC4B231B68.png"><img style="width:1340px" src="How-To%20Linux%20Command%20Guide%203c36a65d7e0a41e99f7a2f6931bcf2ac/EC34BAEF-C5D4-4704-BB57-54FC4B231B68.png"/></a></figure><p id="db90eb14-3cc9-4ec7-9321-55619a5b608f" class="">From here, you now have a copy of the repository on your local computer. You can create files in this directory or edit files in your favorite editor.</p><p id="3ed57799-e580-44e1-953c-5025275fd338" class="">
+</p><p id="0b86c33f-8b10-4945-af2f-ae50e9ab31cc" class="">To add your changes to the repository, use the command <code>git add</code>:</p><pre id="94d871c1-4ad4-45b5-b4bb-1b85e2c6bdf8" class="code"><code>git add .</code></pre><p id="b30e7798-0360-4eb2-bd92-780e7869d6df" class="">This will add all changed files to the <em>staging index</em> of Git— this essentially preps files to be committed, or “saved” to the repository.</p><p id="3ce76919-c3d0-4090-be96-c01c368fa371" class="">To summarize all changed files and “save” them to the repository, use <code>git commit</code>:</p><pre id="59c26f66-10b9-4815-921e-8a1284682329" class="code"><code>git commit -m &quot;Your message here&quot;</code></pre><p id="01514ce1-ba68-494f-8b2a-0b08fcb75797" class="">Note the string above will be your own commit message— you can use something like “Initial commit” or “Add main.c”. Best practice is to have your commit message summarize the changes you made.</p><p id="844aa195-7484-4670-8f20-bd43c5d755e7" class="">Note you may be asked to run <code>git config</code> and specify your email and name: please do so using your <strong>GitHub email address</strong> and your <strong>real name</strong>. An example using my information would be something like:</p><pre id="1a7dc32a-09ed-4b14-8ea5-59ae2a5aecfe" class="code"><code>git config --global user.email &quot;zachary.nett@wsu.edu&quot;
+git config --global user.name &quot;Zach Nett&quot;</code></pre><p id="3c9a1e6f-92e1-4dfe-8f17-5aa80f309b76" class="">The process of adding files and committing should look something like this:</p><figure id="6125e304-b4ea-47bc-bf15-5ae2bf375dfe" class="image"><a href="How-To%20Linux%20Command%20Guide%203c36a65d7e0a41e99f7a2f6931bcf2ac/9FFC096B-84C2-4BA5-8048-1A844A99E337.png"><img style="width:1340px" src="How-To%20Linux%20Command%20Guide%203c36a65d7e0a41e99f7a2f6931bcf2ac/9FFC096B-84C2-4BA5-8048-1A844A99E337.png"/></a></figure><p id="8d0022c9-287e-4eb6-829c-78090ef5ae43" class="">Once you have committed your most recent changes, it is time to <strong>upload</strong> your changes to GitHub Classroom. This is accomplished via a command called <code>git push</code>:</p><figure id="d1678b6d-41e0-4344-b020-a708059fcc57" class="image"><a href="How-To%20Linux%20Command%20Guide%203c36a65d7e0a41e99f7a2f6931bcf2ac/89D38E1A-8044-4A80-B7EB-5E47A4D2A321.png"><img style="width:1340px" src="How-To%20Linux%20Command%20Guide%203c36a65d7e0a41e99f7a2f6931bcf2ac/89D38E1A-8044-4A80-B7EB-5E47A4D2A321.png"/></a></figure><p id="5dd9b877-ab91-49de-a4a3-91ebe15525b0" class="">As you can see in my online repository (after I refresh in a web browser), my changes have been successfully uploaded. Therefore, to <strong>submit changes, make sure to </strong><code><strong>git push</strong></code><strong> (otherwise changes will remain on your local machine).</strong></p><figure id="89eda79d-9b42-4610-a3b3-263f5148d3a5" class="image"><a href="How-To%20Linux%20Command%20Guide%203c36a65d7e0a41e99f7a2f6931bcf2ac/1B48E75D-49B9-41A6-8386-55E1849ECFF2.png"><img style="width:1410px" src="How-To%20Linux%20Command%20Guide%203c36a65d7e0a41e99f7a2f6931bcf2ac/1B48E75D-49B9-41A6-8386-55E1849ECFF2.png"/></a></figure><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="e3ea1080-3da6-4c87-92a4-7bdfe944b569"><div style="font-size:1.5em"><span class="icon">❗</span></div><div style="width:100%">For the tutorial assignment, do this process again, but following the specific instructions (hint: you should use <code>wget</code> and <code>chmod</code>).</div></figure><hr id="c4d21929-7d51-44dc-b7a8-4a5b690840d4"/><h2 id="1b9544a7-eff7-4fee-a797-1532e140f965" class="">How do I use XYZ Linux command?</h2><p id="60562aff-db18-480d-a209-0232b164b039" class="">Luckily, there’s a built-in command to learn about other commands called <code>man</code>:</p><pre id="5692e2ac-d0e7-4d18-8392-d12fa9f96934" class="code"><code>man &lt;command name&gt; </code></pre><p id="a89fa9ed-93fe-4515-993a-dce774ae6419" class="">Therefore, if you want to learn about the <code>ls</code> command, you can do the following:</p><pre id="4056d261-0b58-4324-90ef-6fc2cf88090e" class="code"><code>man ls</code></pre><p id="f52ed04b-06f3-4ee9-8983-8e10912f1a0f" class="">Which will pop up with a window that looks like this:</p><figure id="24adcfe2-0b86-412d-836a-c1c0cd86161e" class="image"><a href="How-To%20Linux%20Command%20Guide%203c36a65d7e0a41e99f7a2f6931bcf2ac/707884FD-5CEB-4E41-8B43-9314F5A5DACD.png"><img style="width:1340px" src="How-To%20Linux%20Command%20Guide%203c36a65d7e0a41e99f7a2f6931bcf2ac/707884FD-5CEB-4E41-8B43-9314F5A5DACD.png"/></a></figure><p id="ca7c82fe-51a0-4f02-9710-d744447a6014" class="">Note this is displayed using the <code>less</code> command— you can use arrow keys (or page up/page down) to scroll and <code>q</code> to quit.</p><p id="3c5f6719-9668-4292-bb35-786bc9dfcaec" class="">To search a man page, you can <em>pipe</em> the command with the <code>grep</code> tool (we’ll learn about pipes later in this course):</p><pre id="59d6f21a-3c60-490b-ac6f-c11b89f0023e" class="code"><code>man &lt;command name&gt; | grep &quot;&lt;search string here&gt;&quot;</code></pre><p id="be355609-c292-48b6-9002-7aa99ec3bcc7" class="">For example, if I want to sort the <code>ls</code> man page for information on sorting, I can do:</p><pre id="cdbd29de-9012-4e4d-963d-a96c2e057593" class="code"><code>man ls | grep &quot;sort&quot;</code></pre><p id="e5e92228-a032-4236-91b8-96a0efa113af" class="">which will only give information that contains the word “sort” on the man page:</p><figure id="6c5351c8-8411-48a3-b601-b1dcabee3c92" class="image"><a href="How-To%20Linux%20Command%20Guide%203c36a65d7e0a41e99f7a2f6931bcf2ac/A14FDDB0-B310-4979-8B34-2E8B30F50A11.png"><img style="width:1340px" src="How-To%20Linux%20Command%20Guide%203c36a65d7e0a41e99f7a2f6931bcf2ac/A14FDDB0-B310-4979-8B34-2E8B30F50A11.png"/></a></figure><p id="2623caf7-6389-495b-8798-b6518bc4fcdf" class="">
+</p></div></article></body></html>
