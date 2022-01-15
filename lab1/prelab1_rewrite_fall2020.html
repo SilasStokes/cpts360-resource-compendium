@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <title>CS360 Pre-LAB1 Assignment</title>
+        <style>
+</style>
+        
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+<style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        <style>
+.task-list-item { list-style-type: none; } .task-list-item-checkbox { margin-left: -20px; vertical-align: middle; }
+</style>
+        
+        
+        
+    </head>
+    <body class="vscode-light">
+        <h1 id="cs360-pre-lab1-assignment">CS360 Pre-LAB1 Assignment</h1>
+<ul>
+<li>DUE: 9-1-2020</li>
+<li>email YOUR output files with ID, NAME to TA</li>
+</ul>
+<h2 id="table-of-contents">Table Of Contents</h2>
+<ul>
+<li><a href="#cs360-pre-lab1-assignment">CS360 Pre-LAB1 Assignment</a>
+<ul>
+<li><a href="#table-of-contents">Table Of Contents</a></li>
+<li><a href="#intro">Intro</a></li>
+<li><a href="#part-1">Part 1:</a>
+<ul>
+<li><a href="#part-a">Part A</a>
+<ul>
+<li><a href="#answer-these-questions">Answer These Questions:</a></li>
+</ul>
+</li>
+<li><a href="#part-b">Part B</a>
+<ul>
+<li><a href="#answer-these-questions-1">Answer These Questions:</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#part-2">Part 2</a>
+<ul>
+<li><a href="#do-the-requirements-1-to-5-as-specified-below">Do the requirements 1 to 5 as specified below:</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="intro">Intro</h2>
+<p>To compile C programs into 32-bit code in 64-bit Ubuntu Linux:</p>
+<pre><code class="language-bash"><div>sudo apt-get install gcc-multilib
+</div></code></pre>
+<p>to get and install</p>
+<pre><code class="language-bash"><div>gcc-multilib
+</div></code></pre>
+<h2 id="part-1">Part 1:</h2>
+<p>A binary executable file, <code>a.out</code>, consists of</p>
+<pre><code><code><div>           |header| Code | Data |&lt;-BSS-&gt;|
+</div></code></code></pre>
+<p>where BSS is for uninitialized globals and uninitialized static locals. The Unix command</p>
+<pre><code class="language-bash"><div>size a.out
+</div></code></pre>
+<p>shows the size of <code>TEXT</code>, <code>DATA</code>, <code>BSS</code> of <code>a.out</code>. Use the following C program, <code>t1.c</code>, to generate <code>t2.c</code>, <code>t3.c</code>,.., <code>t6.c</code> as specified
+below.</p>
+<pre><code class="language-c"><div><span class="hljs-comment">//********** t1.c file ************</span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;stdio.h&gt;</span></span>
+<span class="hljs-keyword">int</span> g;
+main()
+{
+   <span class="hljs-keyword">int</span> a,b,c;
+   a = <span class="hljs-number">1</span>; b = <span class="hljs-number">2</span>;
+   c = a + b;
+   <span class="hljs-built_in">printf</span>(<span class="hljs-string">"c=%d\n"</span>, c);
+}
+</div></code></pre>
+<p><code>t2.c</code>: Change the global variable <code>g</code> to <code>int g=3;</code>
+<code>t3.c</code>: Change the global variable <code>g</code> to <code>int g[10000];</code>
+<code>t4.c</code>: Change the global variable <code>g</code> to <code> int g[10000] = {4};</code>
+<code>t5.c</code>: Change the local variables <code>of main()</code> to</p>
+<pre><code class="language-c"><div><span class="hljs-keyword">int</span> a,b,c, d[<span class="hljs-number">10000</span>];
+</div></code></pre>
+<p><code>t6.c</code>. Change the local variables of main() to</p>
+<pre><code class="language-c"><div><span class="hljs-keyword">static</span> <span class="hljs-keyword">int</span> a,b,c, d[<span class="hljs-number">10000</span>];
+</div></code></pre>
+<h3 id="part-a">Part A</h3>
+<p>For each case, use</p>
+<pre><code class="language-bash"><div>cc -m32 t&lt;number&gt;.c
+</div></code></pre>
+<p>to generate <code>a.out</code>. Then, use</p>
+<pre><code class="language-bash"><div>ls -l a.out
+</div></code></pre>
+<p>to get <code>a.out</code> size and run</p>
+<pre><code class="language-bash"><div>size a.out
+</div></code></pre>
+<p>to get its section sizes. After that, record the observed sizes in a table:</p>
+<pre><code><code><div>  Case  | a.out |  TEXT  |  DATA  |  BSS   |
+--------------------------------------------
+  (1)   |       |        |        |        |
+--------------------------------------------
+  (2)
+--------------------------------------------
+  (3)
+--------------------------------------------
+  (4)
+--------------------------------------------
+  (5)
+--------------------------------------------
+  (6)
+--------------------------------------------
+</div></code></code></pre>
+<h4 id="answer-these-questions">Answer These Questions:</h4>
+<ol>
+<li>Variables in C may be classified as</li>
+</ol>
+<pre><code><code><div>globals ---|--- UNINITIALIZED  globals;
+           |--- INITIALIZED    globals;
+locals  ---|--- AUTOMATIC locals;
+           |--- STATIC    locals;
+</div></code></code></pre>
+<ol start="2">
+<li>In terms of the above classification and the variables <code>g</code>, <code>a</code>, <code>b</code>, <code>c</code>, <code>d</code>,</li>
+</ol>
+<ul>
+<li>Which variables are in DATA?</li>
+<li>Which variables are in BSS ?</li>
+</ul>
+<ol>
+<li>In terms of the TEXT, DATA and BSS sections,</li>
+</ol>
+<ul>
+<li>Which sections are in a.out, which section is NOT in a.out?</li>
+<li>WHY?</li>
+</ul>
+<h3 id="part-b">Part B</h3>
+<p>For each case, use</p>
+<pre><code class="language-bash"><div>cc -m32 -static t.c
+</div></code></pre>
+<p>to generate <code>a.out</code>.</p>
+<h4 id="answer-these-questions-1">Answer These Questions:</h4>
+<ul>
+<li>Record the sizes again and compare them with the sizes in (A).</li>
+<li>WHAT DO YOU SEE?</li>
+<li>WHY?</li>
+</ul>
+<h2 id="part-2">Part 2</h2>
+<p>Given the following <code>t.c</code> and <code>ts.s</code> files
+Under Linux, use</p>
+<pre><code class="language-bash"><div>gcc -m32 t.c ts.s
+</div></code></pre>
+<p>to generate an <code>a.out</code>. Then, run a.out with</p>
+<pre><code class="language-bash"><div>a.out one two three &gt; outfile
+</div></code></pre>
+<h3 id="do-the-requirements-1-to-5-as-specified-below">Do the requirements 1 to 5 as specified below:</h3>
+<pre><code><code><div># ts.s file:
+       .global getebp
+getebp:
+        movl %ebp, %eax
+        ret
+</div></code></code></pre>
+<pre><code class="language-c"><div><span class="hljs-comment">/************* t.c file ********************/</span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;stdio.h&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;stdlib.h&gt;</span></span>
+
+<span class="hljs-keyword">int</span> *FP;
+
+<span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">main</span><span class="hljs-params">(<span class="hljs-keyword">int</span> argc, <span class="hljs-keyword">char</span> *argv[], <span class="hljs-keyword">char</span> *env[])</span>
+</span>{
+  <span class="hljs-keyword">int</span> a, b, c;
+  <span class="hljs-built_in">printf</span>(<span class="hljs-string">"enter main\n"</span>);
+
+  <span class="hljs-built_in">printf</span>(<span class="hljs-string">"&amp;argc=%x argv=%x env=%x\n"</span>, &amp;argc, argv, env);
+  <span class="hljs-built_in">printf</span>(<span class="hljs-string">"&amp;a=%8x &amp;b=%8x &amp;c=%8x\n"</span>, &amp;a, &amp;b, &amp;c);
+
+  <span class="hljs-comment">// (1). Write C code to print values of argc and argv[] entries</span>
+
+  a = <span class="hljs-number">1</span>;
+  b = <span class="hljs-number">2</span>;
+  c = <span class="hljs-number">3</span>;
+  A(a, b);
+  <span class="hljs-built_in">printf</span>(<span class="hljs-string">"exit main\n"</span>);
+}
+
+<span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">A</span><span class="hljs-params">(<span class="hljs-keyword">int</span> x, <span class="hljs-keyword">int</span> y)</span>
+</span>{
+  <span class="hljs-keyword">int</span> d, e, f;
+  <span class="hljs-built_in">printf</span>(<span class="hljs-string">"enter A\n"</span>);
+  <span class="hljs-comment">// (2). write C code to PRINT ADDRESS OF d, e, f</span>
+  d = <span class="hljs-number">4</span>;
+  e = <span class="hljs-number">5</span>;
+  f = <span class="hljs-number">6</span>;
+  B(d, e);
+  <span class="hljs-built_in">printf</span>(<span class="hljs-string">"exit A\n"</span>);
+}
+
+<span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">B</span><span class="hljs-params">(<span class="hljs-keyword">int</span> x, <span class="hljs-keyword">int</span> y)</span>
+</span>{
+  <span class="hljs-keyword">int</span> g, h, i;
+  <span class="hljs-built_in">printf</span>(<span class="hljs-string">"enter B\n"</span>);
+  <span class="hljs-comment">// (3). write C code to PRINT ADDRESS OF g,h,i</span>
+  g = <span class="hljs-number">7</span>;
+  h = <span class="hljs-number">8</span>;
+  i = <span class="hljs-number">9</span>;
+  C(g, h);
+  <span class="hljs-built_in">printf</span>(<span class="hljs-string">"exit B\n"</span>);
+}
+
+<span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">C</span><span class="hljs-params">(<span class="hljs-keyword">int</span> x, <span class="hljs-keyword">int</span> y)</span>
+</span>{
+  <span class="hljs-keyword">int</span> u, v, w, i, *p;
+
+  <span class="hljs-built_in">printf</span>(<span class="hljs-string">"enter C\n"</span>);
+  <span class="hljs-comment">// (4).write C code to PRINT ADDRESS OF u,v,w,i,p;</span>
+  u = <span class="hljs-number">10</span>;
+  v = <span class="hljs-number">11</span>;
+  w = <span class="hljs-number">12</span>;
+  i = <span class="hljs-number">13</span>;
+
+  FP = (<span class="hljs-keyword">int</span> *)getebp();  <span class="hljs-comment">// FP = stack frame pointer of the C()</span>
+                         <span class="hljs-comment">//      function</span>
+
+  <span class="hljs-comment">// (5). Write C code to print the stack frame link list.</span>
+
+  p = (<span class="hljs-keyword">int</span> *)&amp;p;
+
+  <span class="hljs-comment">// (6). Print the stack contents from p to the frame of main()</span>
+  <span class="hljs-comment">// YOU MAY JUST PRINT 128 entries of the stack contents.</span>
+
+  <span class="hljs-comment">// (7). On a hard copy of the print out, identify the stack contents</span>
+  <span class="hljs-comment">//      as LOCAL VARIABLES, PARAMETERS, stack frame pointer of each function.</span>
+}
+</div></code></pre>
+
+    </body>
+    </html>
