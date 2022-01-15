@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <title>CS360 LAB ASSIGNMENT #1</title>
+        <style>
+</style>
+        
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+<style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        <style>
+.task-list-item { list-style-type: none; } .task-list-item-checkbox { margin-left: -20px; vertical-align: middle; }
+</style>
+        
+        
+        
+    </head>
+    <body class="vscode-light">
+        <h1 id="cs360-lab-assignment-1">CS360 LAB ASSIGNMENT #1</h1>
+<ul>
+<li>Due &amp; Demo: 9-3-2020</li>
+<li>Email YOUR code and output file to TA BEFORE the DEMO</li>
+<li>Demo YOUR work to TA via ZOOM session; TA will post demo schedule</li>
+</ul>
+<h2 id="contents">Contents</h2>
+<ul>
+<li><a href="#cs360-lab-assignment-1">CS360 LAB ASSIGNMENT #1</a>
+<ul>
+<li><a href="#contents">Contents</a></li>
+<li><a href="#part-1-partition-table">Part 1: Partition Table</a>
+<ul>
+<li><a href="#objectives">OBJECTIVES</a></li>
+<li><a href="#intro-what-is-a-partition-table">Intro: What is a Partition Table?</a></li>
+<li><a href="#part-1-requirements">Part 1 Requirements:</a></li>
+<li><a href="#starter-code">Starter Code</a>
+<ul>
+<li><a href="#how-to-create-a-disk-file-of-2880-512-byte-sectors-or-1440-1k-blocks">How to create a disk file of 2880 512-byte sectors OR 1440 1K blocks</a></li>
+</ul>
+</li>
+<li><a href="#algorithm-for-part1-of-lab1">Algorithm for Part1 of LAB1:</a></li>
+</ul>
+</li>
+<li><a href="#part-2-myprintf-function">Part 2: myprintf Function</a>
+<ul>
+<li><a href="#2-1-write-your-own-printschar-s-function-to-print-a-string">2-1. Write YOUR own prints(char *s) function to print a string.</a></li>
+<li><a href="#2-2-write-your-own-format-functions">2-2. Write YOUR own format functions</a></li>
+<li><a href="#2-3-implement-yor-own-myprintf-function">2-3: Implement yor own myprintf function</a></li>
+<li><a href="#2-4-using-your-new-function">2-4: Using your new function</a></li>
+</ul>
+</li>
+<li><a href="#help-info">Help Info</a>
+<ul>
+<li><a href="#algorithm">Algorithm</a></li>
+</ul>
+</li>
+<li><a href="#to-do">To Do:</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="part-1-partition-table">Part 1: Partition Table</h2>
+<h3 id="objectives">OBJECTIVES</h3>
+<p>Partition table, fdisk, structures in C, open-read files</p>
+<h3 id="intro-what-is-a-partition-table">Intro: What is a Partition Table?</h3>
+<p>A disk (floppy disk, hard disk, USB drive, SD cards, etc.) consists of 512-byte sectors, which are counted linearly as sector 0,1,2,....</p>
+<p>A disk is usually divided into several partitions. The partitions are recorded in a partition table at the beginning (the 0th sector) of the disk, called the Master Boot Record (MBR). Inside the MBR, the partition table begins at the byte offset 0x1BE. The Partitin Table contains 4 entries, each 16 bytes long, defined in the following C structure.</p>
+<pre><code class="language-c"><div><span class="hljs-keyword">typedef</span> <span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">char</span>  u8;
+<span class="hljs-keyword">typedef</span> <span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">short</span> u16;
+<span class="hljs-keyword">typedef</span> <span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">int</span>   u32;
+
+<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">partition</span> {</span>
+	u8 drive;             <span class="hljs-comment">/* drive number FD=0, HD=0x80, etc. */</span>
+
+	u8  head;             <span class="hljs-comment">/* starting head */</span>
+	u8  sector;           <span class="hljs-comment">/* starting sector */</span>
+	u8  cylinder;         <span class="hljs-comment">/* starting cylinder */</span>
+
+	u8  sys_type;         <span class="hljs-comment">/* partition type: NTFS, LINUX, etc. */</span>
+
+	u8  end_head;         <span class="hljs-comment">/* end head */</span>
+	u8  end_sector;       <span class="hljs-comment">/* end sector */</span>
+	u8  end_cylinder;     <span class="hljs-comment">/* end cylinder */</span>
+
+	u32 start_sector;     <span class="hljs-comment">/* starting sector counting from 0 */</span>
+	u32 nr_sectors;       <span class="hljs-comment">/* number of of sectors in partition */</span>
+  };
+
+</div></code></pre>
+<p><img src="file:///c:\Users\Will\Google Drive\documents\documents-wsu\2020-fall\04-CS360\labs\fig-01.png" alt="figure 1"></p>
+<p>heads, sectors, cylinders are for old floppy disks. Hard disks only use start_sector and nr_sectors.</p>
+<p>Each partition has a type, which indicates what kind of file system the partition MAY contain. Consult Linux's fdisk to see the partition types.</p>
+<p>If a partition is EXTEND type (type=5), the partition's area may be further divided into more partitions. The extended partitions forms a LINK-LIST as the following diagram shows.</p>
+<pre><code><code><div>------------------------------------------------------------------------------
+Assume P4 is EXT type:
+
+P4's beginSector = localMBR
+                     P5's beginSector# relative to beginSector
+                     P6's MBR's sector# = localMBR
+                         (r.e. to P4)       P6's beginSector#
+                                            P7's MBR r.e. to P4 --&gt; etc.
+
+The first sector of each extended partition is a localMBR. Each localMBR has a partition table which contains only 2 entries. The first entry defines the start sector and size of the extended partition. The second entry points to the next localMBR. All the localMBR's sector numbers are relative to P4's start sector. As usual, the link list ends with a 0.
+-------------------------------------------------------------------------------
+</div></code></code></pre>
+<p>Since use fdisk on hard disks is risky, we shall use a VIRTUAL disk for this assignment. A virtual disk is just a file but its contents are exactly the same as a REAL disk. Download the file <code>~cs360/samples/LAB1/vdisk</code> to YOUR Linux. Then, run fdisk vdisk
+'p' : to see the partition table
+'q' : to quit fdisk</p>
+<h3 id="part-1-requirements">Part 1 Requirements:</h3>
+<p>Write a C program to display the partition table of the vdisk in</p>
+<ul class="contains-task-list">
+<li class="task-list-item"><input class="task-list-item-checkbox" disabled="" type="checkbox"> Linux fdisk 'p' output form for the first 4 partitions (%40),</li>
+<li class="task-list-item"><input class="task-list-item-checkbox" disabled="" type="checkbox"> including ALL the extend partitions (%60) &lt;== YOU BETTER DO THIS !!!!.</li>
+</ul>
+<p>Turn in a printed HARD COPY containing your work.</p>
+<h3 id="starter-code">Starter Code</h3>
+<pre><code class="language-c"><div><span class="hljs-comment">/********* h1.c **********/</span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;stdio.h&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;string.h&gt;</span></span>
+
+<span class="hljs-keyword">typedef</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">person</span>{</span>
+  <span class="hljs-keyword">char</span> name[<span class="hljs-number">64</span>];
+  <span class="hljs-keyword">int</span>  id;
+  <span class="hljs-keyword">int</span>  age;
+  <span class="hljs-keyword">char</span> gender;
+}PERSON;
+
+PERSON kcw, *p;
+
+<span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span>
+</span>{
+
+<span class="hljs-comment">// Access struct fields by . operator: OK but ugly</span>
+   kcw.id = <span class="hljs-number">12345678</span>;
+   kcw.age = <span class="hljs-number">83</span>;
+   kcw.gender = <span class="hljs-string">'M'</span>;
+
+   p = &amp;kcw;
+
+<span class="hljs-comment">// Deference pointer to struct, then use . operator: NOT GOOD either!</span>
+   (*p).id = <span class="hljs-number">123</span>;
+   (*p).age = <span class="hljs-number">120</span>;
+
+<span class="hljs-comment">// Use pointer by -&gt; operator is the BEST WAY:</span>
+   p-&gt;id = <span class="hljs-number">12345678</span>;
+   p-&gt;age = <span class="hljs-number">83</span>;
+   p-&gt;gender = <span class="hljs-string">'M'</span>;
+   <span class="hljs-built_in">strcpy</span>(p-&gt;name, <span class="hljs-string">"k.c. wang"</span>);
+
+   <span class="hljs-built_in">printf</span>(<span class="hljs-string">"name=%s id=%d age=%d gender=%c\n"</span>,
+	 p-&gt;name, p-&gt;id, p-&gt;age, p-&gt;gender);
+}
+</div></code></pre>
+<h4 id="how-to-create-a-disk-file-of-2880-512-byte-sectors-or-1440-1k-blocks">How to create a disk file of 2880 512-byte sectors OR 1440 1K blocks</h4>
+<pre><code class="language-bash"><div>dd <span class="hljs-keyword">if</span>=/dev/zero of=disk bs=512 count=2880
+</div></code></pre>
+<pre><code class="language-c"><div><span class="hljs-comment">/********** h2.c *********/</span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;stdio.h&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;string.h&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;fcntl.h&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;sys/types.h&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;unistd.h&gt;</span></span>
+
+<span class="hljs-keyword">typedef</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">person</span>{</span>
+  <span class="hljs-keyword">char</span> name[<span class="hljs-number">64</span>];
+  <span class="hljs-keyword">int</span>  id;
+  <span class="hljs-keyword">int</span>  age;
+  <span class="hljs-keyword">char</span> gender;
+}PERSON;
+
+<span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">write_sector</span><span class="hljs-params">(<span class="hljs-keyword">int</span> fd, <span class="hljs-keyword">int</span> sector, <span class="hljs-keyword">char</span> *buf)</span>
+</span>{
+  <span class="hljs-keyword">int</span> n;
+  lseek(fd, sector*<span class="hljs-number">512</span>, SEEK_SET); <span class="hljs-comment">// advance to sector*512 bytes</span>
+  n = write(fd, buf, <span class="hljs-number">512</span>);         <span class="hljs-comment">// write 512 bytes from buf[] to sector</span>
+  <span class="hljs-keyword">if</span> (n != <span class="hljs-number">512</span>){
+     <span class="hljs-built_in">printf</span>(<span class="hljs-string">"write failed\n"</span>);
+     <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;
+  }
+  <span class="hljs-keyword">return</span> n;
+}
+
+PERSON kcw, *p;
+
+<span class="hljs-keyword">int</span> fd;
+<span class="hljs-keyword">char</span> buf[<span class="hljs-number">512</span>];
+
+<span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span>
+</span>{
+  p = &amp;kcw;
+
+  <span class="hljs-built_in">strcpy</span>(p-&gt;name, <span class="hljs-string">"k.c. Wang"</span>);
+  p-&gt;id = <span class="hljs-number">12345678</span>;
+  p-&gt;age = <span class="hljs-number">83</span>;
+  p-&gt;gender = <span class="hljs-string">'M'</span>;
+
+  fd = open(<span class="hljs-string">"disk"</span>, O_WRONLY);  <span class="hljs-comment">// open disk file for WRITE</span>
+  <span class="hljs-built_in">printf</span>(<span class="hljs-string">"fd = %d\n"</span>, fd);      <span class="hljs-comment">// show file descriptor number</span>
+
+  bzero(buf, <span class="hljs-number">512</span>);              <span class="hljs-comment">// clear buf[ ] to 0's</span>
+  <span class="hljs-built_in">memset</span>(buf, <span class="hljs-number">0</span>, <span class="hljs-number">512</span>);          <span class="hljs-comment">// set buf[ ] to 0's</span>
+
+  <span class="hljs-built_in">memcpy</span>(buf+<span class="hljs-number">256</span>, p, <span class="hljs-keyword">sizeof</span>(PERSON));
+
+  write_sector(fd, <span class="hljs-number">1234</span>, buf);   <span class="hljs-comment">// write buf[512] to sector 1234</span>
+}
+</div></code></pre>
+<pre><code class="language-c"><div><span class="hljs-comment">/*********** h3.c ***********/</span>
+<span class="hljs-comment">// Assume disk sector 1234 contains a PERSON struct at byte offset 256</span>
+
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;stdio.h&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;string.h&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;fcntl.h&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;sys/types.h&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;unistd.h&gt;</span></span>
+
+<span class="hljs-keyword">typedef</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">person</span>{</span>
+  <span class="hljs-keyword">char</span> name[<span class="hljs-number">64</span>];
+  <span class="hljs-keyword">int</span>  id;
+  <span class="hljs-keyword">int</span>  age;
+  <span class="hljs-keyword">char</span> gender;
+}PERSON;
+
+<span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">read_sector</span><span class="hljs-params">(<span class="hljs-keyword">int</span> fd, <span class="hljs-keyword">int</span> sector, <span class="hljs-keyword">char</span> *buf)</span>
+</span>{
+  <span class="hljs-keyword">int</span> n;
+  lseek(fd, sector*<span class="hljs-number">512</span>, SEEK_SET);
+  n = read(fd, buf, <span class="hljs-number">512</span>);
+  <span class="hljs-keyword">if</span> (n &lt;= <span class="hljs-number">0</span>){
+    <span class="hljs-built_in">printf</span>(<span class="hljs-string">"read failed\n"</span>);
+    <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;
+  }
+  <span class="hljs-keyword">return</span> n;
+}
+
+PERSON kcw, *p;
+
+<span class="hljs-keyword">int</span> fd;
+<span class="hljs-keyword">char</span> buf[<span class="hljs-number">512</span>];
+
+<span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span>
+</span>{
+  fd = open(<span class="hljs-string">"disk"</span>, O_RDONLY);  <span class="hljs-comment">// open disk for READ</span>
+  <span class="hljs-built_in">printf</span>(<span class="hljs-string">"fd = %d\n"</span>, fd);
+
+  read_sector(fd, <span class="hljs-number">1234</span>, buf);   <span class="hljs-comment">// READ sector 1234 into buf[ ]</span>
+
+  p = (PERSON *)(buf+<span class="hljs-number">256</span>);      <span class="hljs-comment">// OR p=(PERSON *)&amp;buf[256];</span>
+
+  <span class="hljs-built_in">printf</span>(<span class="hljs-string">"name=%s id=%d age=%d gender=%c\n"</span>,
+	 p-&gt;name, p-&gt;id, p-&gt;age, p-&gt;gender);
+
+}
+</div></code></pre>
+<h3 id="algorithm-for-part1-of-lab1">Algorithm for Part1 of LAB1:</h3>
+<ol>
+<li>open diskimage file for READ</li>
+<li>read Sector 0 into <code>char buf[512]</code></li>
+<li><code>struct partition *p = (shut up)&amp;buf[0x1BE]; // p points at P1</code></li>
+<li>use <code>p-&gt;</code> to print fields of <code>P1</code></li>
+<li><code>p++; // p points at P2; print P2 information</code></li>
+<li>repeat for <code>p3</code>, <code>P4</code></li>
+<li>if <code>P4</code> is EXTENDED (type=5): read P4's begin_sector into <code>char buf[512]</code></li>
+</ol>
+<pre><code><code><div>    localMBR at `0x1bE` has 2 entries = P5
+                                      sector# of next localMBR
+                                      (as a link list that ends with 0)
+</div></code></code></pre>
+<pre><code class="language-c"><div><span class="hljs-comment">/* sample code for Part 1 */</span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;stdio.h&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;fcntl.h&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;ext2fs/ext2_fs.h&gt;  // Ubuntu User: sudo apt install e2fslibs-dev</span></span>
+
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;sys/types.h&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;unistd.h&gt;</span></span>
+
+<span class="hljs-keyword">typedef</span> <span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">char</span>  u8;
+<span class="hljs-keyword">typedef</span> <span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">short</span> u16;
+<span class="hljs-keyword">typedef</span> <span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">int</span>   u32;
+
+<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">partition</span> {</span>
+	u8 drive;         <span class="hljs-comment">// 0x80 - active</span>
+	u8 head;          <span class="hljs-comment">// starting head</span>
+	u8 sector;        <span class="hljs-comment">// starting sector</span>
+	u8 cylinder;      <span class="hljs-comment">// starting cylinder</span>
+	u8 sys_type;      <span class="hljs-comment">// partition type</span>
+	u8 end_head;      <span class="hljs-comment">// end head</span>
+	u8 end_sector;	  <span class="hljs-comment">// end sector</span>
+	u8 end_cylinder;  <span class="hljs-comment">// end cylinder</span>
+	u32 start_sector; <span class="hljs-comment">// starting sector counting from 0</span>
+	u32 nr_sectors;   <span class="hljs-comment">// nr of sectors in partition</span>
+};
+
+<span class="hljs-keyword">char</span> *dev = <span class="hljs-string">"vdisk"</span>;
+<span class="hljs-keyword">int</span> fd;
+
+<span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">read_sector</span><span class="hljs-params">(<span class="hljs-keyword">int</span> fd, <span class="hljs-keyword">int</span> sector, <span class="hljs-keyword">char</span> *buf)</span>
+</span>{
+    <span class="hljs-comment">// same as shown above</span>
+}
+
+<span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span>
+</span>{
+  <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">partition</span> *<span class="hljs-title">p</span>;</span>
+  <span class="hljs-keyword">char</span> buf[<span class="hljs-number">512</span>];
+
+  fd = open(dev, O_RDONLY);   <span class="hljs-comment">// open dev for READ</span>
+
+   read(fd, buf, <span class="hljs-number">512</span>);        <span class="hljs-comment">// read MBR into buf[]</span>
+   <span class="hljs-comment">// read_sector(fd, 0, buf);    // OR call read_sector()</span>
+   p = (struct partition *)(&amp;buf[<span class="hljs-number">0x1be</span>]); <span class="hljs-comment">// p-&gt;P1</span>
+
+   <span class="hljs-built_in">printf</span>(<span class="hljs-string">"%8d %8d %8x\n"</span>, p-&gt;start_sector, p-&gt;nr_sectors, p-&gt;sys_type);
+
+   <span class="hljs-comment">// Write YOUR code to print all 4 partitions</span>
+
+
+   <span class="hljs-comment">// ASSUME P4 is EXTEND type;</span>
+   p += <span class="hljs-number">3</span>;      <span class="hljs-comment">// p-&gt; P4</span>
+   <span class="hljs-built_in">printf</span>(<span class="hljs-string">"P4 start_sector = %d\n"</span>, p-&gt;start_sector);
+
+   read_sector(fd, p-&gt;start_sector, buf);
+
+   p = (struct partition *)&amp;buf[<span class="hljs-number">0x1BE</span>];    <span class="hljs-comment">// p-&gt;localMBR</span>
+   <span class="hljs-built_in">printf</span>(<span class="hljs-string">"FIRST entry of localMBR\n"</span>);
+   <span class="hljs-built_in">printf</span>(<span class="hljs-string">"start_sector=%d, nsectors=%d\n"</span>, p-&gt;start_sector, p-&gt;nr_sectors);
+
+   <span class="hljs-comment">// Write YOUR code to get 2nd entry, which points to the next localMBR, etc.</span>
+   <span class="hljs-comment">// <span class="hljs-doctag">NOTE:</span> all sector numbers are relative to P4's start_sector</span>
+}
+</div></code></pre>
+<h2 id="part-2-myprintf-function">Part 2: myprintf Function</h2>
+<h3 id="2-1-write-your-own-printschar-s-function-to-print-a-string">2-1. Write YOUR own prints(char *s) function to print a string.</h3>
+<p>Given:</p>
+<pre><code class="language-c"><div><span class="hljs-built_in">putchar</span>(<span class="hljs-keyword">char</span> c)
+</div></code></pre>
+<p>of Linux, which prints a char.</p>
+<h3 id="2-2-write-your-own-format-functions">2-2. Write YOUR own format functions</h3>
+<p>Given: The following <code>printu()</code> function prints an unsigned integer.</p>
+<pre><code class="language-c"><div><span class="hljs-keyword">typedef</span> <span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">int</span> u32;
+
+<span class="hljs-keyword">char</span> *ctable = <span class="hljs-string">"0123456789ABCDEF"</span>;
+<span class="hljs-keyword">int</span>  BASE = <span class="hljs-number">10</span>;
+
+<span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">rpu</span><span class="hljs-params">(u32 x)</span>
+</span>{
+    <span class="hljs-keyword">char</span> c;
+    <span class="hljs-keyword">if</span> (x){
+       c = ctable[x % BASE];
+       rpu(x / BASE);
+       <span class="hljs-built_in">putchar</span>(c);
+    }
+}
+
+<span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">printu</span><span class="hljs-params">(u32 x)</span>
+</span>{
+   (x==<span class="hljs-number">0</span>)? <span class="hljs-built_in">putchar</span>(<span class="hljs-string">'0'</span>) : rpu(x);
+   <span class="hljs-built_in">putchar</span>(<span class="hljs-string">' '</span>);
+}
+</div></code></pre>
+<pre><code><code><div>EXAMPLE:
+Assume u32 x = 123;
+1st call to rpu(x): x=123; x%10 = 3 ===&gt;  c = '3';
+2nd call to rpu(x): x=12;  x%10 = 2 ===&gt;  c = '2';
+3rd call          : x=1;   x%10 = 1 ===&gt;  c = '1';
+----------------------------------------------------
+4th call          : x=0 =&gt; return ====&gt; print '1';
+                           return ====&gt; print '2'
+                           return ====&gt; print '3'
+</div></code></code></pre>
+<pre><code class="language-c"><div> <span class="hljs-function"><span class="hljs-keyword">int</span>  <span class="hljs-title">printd</span><span class="hljs-params">(<span class="hljs-keyword">int</span> x)</span> <span class="hljs-comment">// which print an integer (x may be negative!!!)</span>
+ <span class="hljs-keyword">int</span>  <span class="hljs-title">printx</span><span class="hljs-params">(u32 x)</span> <span class="hljs-comment">// which print x in HEX   (start with 0x )</span>
+ <span class="hljs-keyword">int</span>  <span class="hljs-title">printo</span><span class="hljs-params">(u32 x)</span> <span class="hljs-comment">// which print x in Octal (start with 0  )</span>
+</span></div></code></pre>
+<h3 id="2-3-implement-yor-own-myprintf-function">2-3: Implement yor own myprintf function</h3>
+<p>Write YOUR own myprintf(char *fmt, ...) function to print</p>
+<pre><code><code><div>char                      by %c
+string                    by %s
+unsigned integer          by %u
+integer                   by %d
+unsigned integer in OCT   by %o
+unsigned integer in HEX   by %x
+</div></code></code></pre>
+<p>Ignore field width and precision, just print the items as specified.</p>
+<h3 id="2-4-using-your-new-function">2-4: Using your new function</h3>
+<p>In the int main(int argc, char *argv[ ], char *env[ ]) function, use YOUR myprintf() to print</p>
+<pre><code class="language-c"><div><span class="hljs-function">argc value
+argv strings
+env  strings
+<span class="hljs-title">myprintf</span><span class="hljs-params">(
+    <span class="hljs-string">"cha=%c string=%s      dec=%d hex=%x oct=%o neg=%d\n"</span>,
+	<span class="hljs-string">'A'</span>,
+    <span class="hljs-string">"this is a test"</span>,
+    <span class="hljs-number">100</span>,
+    <span class="hljs-number">100</span>,
+    <span class="hljs-number">100</span>,
+    <span class="hljs-number">-100</span>
+)</span></span>;
+</div></code></pre>
+<h2 id="help-info">Help Info</h2>
+<p>NOTE: This assignment is for 32-bit GCC, which passes parameters on stack. Use the command</p>
+<pre><code class="language-bash"><div>gcc -m32 t.c
+</div></code></pre>
+<p>to compile your C source files.</p>
+<pre><code class="language-c"><div><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">myprintf</span><span class="hljs-params">(<span class="hljs-keyword">char</span> *fmt, ...)</span>      <span class="hljs-comment">// C compiler requires the 3 DOTs</span>
+</span></div></code></pre>
+<p>Assume the call is</p>
+<pre><code class="language-c"><div>myprintf(fmt, a,b,c,d);
+Upon entry, the following diagram shows the <span class="hljs-built_in">stack</span> contents.
+</div></code></pre>
+<pre><code><code><div>               char *cp -&gt; &quot;...%c ..%s ..%u .. %d\n&quot;
+  HIGH               |                                              LOW
+--------------------------- --|------------------------------------------
+  | d   | c   | b   | a | fmt | retPC | ebp | locals |
+  | --- | --- | --- |
+  |     |
+           int *ip            CPU.ebp
+</div></code></code></pre>
+<ol>
+<li>Let char *cp point at the format string</li>
+<li>Let int *ip point at the first item to be printed on stack:</li>
+</ol>
+<p>NOTE: In 32-bit mode, Every entry in the stack is 4-byte for chars, they are in the lowest byte (of the 4-byte entry) for strings, they are POINTERs to the actual strings.</p>
+<h3 id="algorithm">Algorithm</h3>
+<ul>
+<li>Use <code>cp</code> to scan the format string:
+<ul>
+<li>spit out each char that's NOT %</li>
+<li>for each \n, spit out an extra \r</li>
+<li>Upon seeing a %: get next char, which must be one of 'c','s','u','d', 'o','x'
+<ul>
+<li>Then call YOUR<pre><code class="language-c"><div><span class="hljs-built_in">putchar</span>(*ip); <span class="hljs-comment">// for 'c';</span>
+prints(*ip);  <span class="hljs-comment">// for 's';</span>
+printu(*ip);  <span class="hljs-comment">// for 'u';</span>
+printd(*ip);  <span class="hljs-comment">// for 'd';</span>
+printo(*ip);  <span class="hljs-comment">// for 'o';</span>
+printx(*ip);  <span class="hljs-comment">// for 'x';</span>
+</div></code></pre>
+</li>
+</ul>
+</li>
+<li>Advance ip to point to the next item on stack.</li>
+</ul>
+</li>
+</ul>
+<p>After implementing your <code>myprintf()</code> function, write C program to test your
+<code>myprintf()</code> function first. Then use it in the assignment.</p>
+<h2 id="to-do">To Do:</h2>
+<ul class="contains-task-list">
+<li class="task-list-item"><input class="task-list-item-checkbox" disabled="" type="checkbox"> Part 1
+<ul class="contains-task-list">
+<li class="task-list-item"><input class="task-list-item-checkbox" disabled="" type="checkbox"> Write a C program to display the partition table of the vdisk in
+<ul class="contains-task-list">
+<li class="task-list-item"><input class="task-list-item-checkbox" disabled="" type="checkbox"> Linux fdisk 'p' output form for the first 4 partitions (%40),</li>
+<li class="task-list-item"><input class="task-list-item-checkbox" disabled="" type="checkbox"> including ALL the extend partitions (%60) &lt;== YOU BETTER DO THIS !!!!.</li>
+</ul>
+</li>
+<li class="task-list-item"><input class="task-list-item-checkbox" disabled="" type="checkbox"> Turn in a printed HARD COPY containing your work.</li>
+</ul>
+</li>
+<li class="task-list-item"><input class="task-list-item-checkbox" disabled="" type="checkbox"> Part 2:
+<ul class="contains-task-list">
+<li class="task-list-item"><input class="task-list-item-checkbox" disabled="" type="checkbox"> 2-1. Write YOUR own prints(char *s) function to print a string (See Above)</li>
+<li class="task-list-item"><input class="task-list-item-checkbox" disabled="" type="checkbox"> 2-2. Write YOUR own format functions (See Above)</li>
+<li class="task-list-item"><input class="task-list-item-checkbox" disabled="" type="checkbox"> 2-3: Implement yor own myprintf function (See Above)</li>
+<li class="task-list-item"><input class="task-list-item-checkbox" disabled="" type="checkbox"> 2-4: Use your new myprintf function (See Above)</li>
+<li class="task-list-item"><input class="task-list-item-checkbox" disabled="" type="checkbox"> Write a function to test your new myprintf function</li>
+</ul>
+</li>
+</ul>
+
+    </body>
+    </html>
