@@ -1,0 +1,691 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Setting up a working WSL development environment</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 3px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	text-indent: -1.7em;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+}
+
+.simple-table-header {
+	background: rgb(247, 246, 243);
+	color: black;
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-block;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1.25em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(55, 53, 47, 1);
+}
+.highlight-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(145, 145, 142, 1);
+}
+.highlight-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(187, 132, 108, 1);
+}
+.highlight-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(215, 129, 58, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 148, 51, 1);
+}
+.highlight-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(108, 155, 125, 1);
+}
+.highlight-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(91, 151, 189, 1);
+}
+.highlight-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(167, 130, 195, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(205, 116, 159, 1);
+}
+.highlight-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(225, 111, 100, 1);
+}
+.highlight-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.highlight-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.highlight-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.highlight-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.highlight-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.highlight-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.highlight-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.highlight-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.highlight-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(145, 145, 142, 1);
+}
+.block-color-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(187, 132, 108, 1);
+}
+.block-color-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(215, 129, 58, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 148, 51, 1);
+}
+.block-color-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(108, 155, 125, 1);
+}
+.block-color-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(91, 151, 189, 1);
+}
+.block-color-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(167, 130, 195, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(205, 116, 159, 1);
+}
+.block-color-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(225, 111, 100, 1);
+}
+.block-color-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.block-color-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.block-color-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.block-color-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.block-color-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.block-color-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.block-color-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.select-value-color-pink { background-color: rgba(245, 224, 233, 1); }
+.select-value-color-purple { background-color: rgba(232, 222, 238, 1); }
+.select-value-color-green { background-color: rgba(219, 237, 219, 1); }
+.select-value-color-gray { background-color: rgba(227, 226, 224, 1); }
+.select-value-color-opaquegray { background-color: rgba(255, 255, 255, 0.0375); }
+.select-value-color-orange { background-color: rgba(250, 222, 201, 1); }
+.select-value-color-brown { background-color: rgba(238, 224, 218, 1); }
+.select-value-color-red { background-color: rgba(255, 226, 221, 1); }
+.select-value-color-yellow { background-color: rgba(253, 236, 200, 1); }
+.select-value-color-blue { background-color: rgba(211, 229, 239, 1); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="312c165a-fbb4-4fe6-b431-56cf574ad10b" class="page sans"><header><h1 class="page-title">Setting up a working WSL development environment</h1></header><div class="page-body"><div id="0a740590-34cb-4a4c-92b5-062b7c0153ba" class="column-list"><div id="94500fac-3885-49de-b096-838fd6b97ab7" style="width:50%" class="column"><p id="f463810e-7c3d-4208-9116-d616a20e1503" class=""><strong>Written by:</strong></p><p id="cfcac452-c851-499b-8d29-5e8e6565ef35" class="">William Foster</p></div><div id="2f215b57-29d9-43b8-b0c2-49c384c7b353" style="width:50%" class="column"><p id="4a406f84-63a0-4c21-aad8-1748ab974d6c" class=""><strong>Last Edited:</strong></p><p id="ebcd00e5-93d1-4c38-bff5-fc68c0447353" class="">January 28th, 2022</p></div></div><hr id="a691b598-d9b0-4a1e-bd79-68164d3092de"/><p id="6809f0dc-185c-4901-9f88-b3f539d31512" class="">If you have been going without debugging, or have felt like development in Linux has been a step</p><p id="3a0b7a4f-2dfb-4494-8e96-9edfa6bfd931" class=""><em>down </em>from Visual Studio, this write-up may help alleviate some of the pain points experienced when transitioning to Linux Development.</p><hr id="e77864b2-f286-4f14-89b1-6a35a27d9d60"/><h2 id="7a947fba-6f06-4127-b4a0-61a8e7c3477b" class="">Table of Contents</h2><nav id="7f258d61-943a-437b-9caa-c05172d79dc9" class="block-color-gray table_of_contents"><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#7a947fba-6f06-4127-b4a0-61a8e7c3477b">Table of Contents</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#fffd6977-a36f-41fd-9353-71970a040f89">Installing WSL</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#a7ba269d-603b-46c8-a700-5a3057b9a368">Installing Necessary Development Packages</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#318e8a7c-2207-4611-b8a5-18893188e846">Git and SSH Key Setup</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#c84c3d9e-942b-49d7-a667-fa0205ff26e1">Install VS Code and Extensions</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#5318f300-1120-4b64-a301-32ebbf6d5164">Build Tasks and Debugging</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#35bfe62b-d949-4c4b-855f-ba470ec82441">Setup Build Tasks</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#5b72a9dd-5f92-47e2-a6d2-4864d2320373">Debugging</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#bf83c118-283f-4676-89ba-537468dbff6e">Pushing Changes Back to GitHub</a></div></nav><h2 id="fffd6977-a36f-41fd-9353-71970a040f89" class="">Installing WSL</h2><p id="d661837c-425d-4c17-96c1-64e0e1723f91" class="">First off we want to pop into PowerShell to get WSL2 installed on the Windows machine. Right-click the start menu icon and click “Windows PowerShell (Administrator)” or use the <code>Win-X</code> + <code>A</code> shortcut to do the same thing.</p><figure id="d7445d8d-9c2a-472e-83e9-889a4f92dc5e" class="image"><a href="Setting%20up%20a%20working%20WSL%20development%20environment%20d7445d8d9c2a472e83e9889a4f92dc5e/0.png"><img style="width:630px" src="Setting%20up%20a%20working%20WSL%20development%20environment%20d7445d8d9c2a472e83e9889a4f92dc5e/0.png"/></a></figure><p id="dcc4186b-10a4-4a3b-83ab-423dbacd827e" class="">
+</p><p id="c93ea68d-da08-49ee-aab3-4924bb2af3f6" class="">Next, run the command <code>wsl --install</code> to quickly install everything needed to run Ubuntu on Windows. After that has finished installing, in PowerShell, type the <code>Restart-Computer</code> cmdlet to restart and finish installing WSL2. </p><p id="e807878b-cc78-4488-9c49-1ffc0a067c59" class="">A terminal should open on restart with the text <code>Installing, this may take a few minutes...</code> After this completes, you will need to type in a username and password for your WSL virtual machine. You will need this password to run <code>sudo</code> and other privileged commands in WSL.</p><p id="49d5253e-9de7-4a52-aebb-ba3c0712971b" class="">
+</p><h3 id="a7ba269d-603b-46c8-a700-5a3057b9a368" class="">Installing Necessary Development Packages</h3><p id="e74a9755-e4a1-42fa-953f-1d2688c05b5f" class="">After we get a terminal open, run the following commands to update Ubuntu package information and upgrade all installed software:</p><pre id="e4eb2928-0456-44b2-a5f2-5d54ea89a16f" class="code"><code> sudo apt update &amp;&amp; sudo apt upgrade -y</code></pre><p id="bcbc7369-bbdf-4212-bf24-08d1c76dc6b8" class="">
+</p><p id="8a8948cd-495a-49dd-8390-90d7ea4f5d4c" class="">After this completes, run the following command to install git, the gcc toolchain, gdb, and cmake. </p><pre id="6ab4a5a3-ad7b-4ba7-8b7f-e1ed5ff0220f" class="code"><code>sudo apt install git git-extras build-essential gcc-multilib gdb cmake -y</code></pre><p id="59a13f6b-3af0-45c2-aa72-79a1442bd964" class="">
+</p><h2 id="318e8a7c-2207-4611-b8a5-18893188e846" class="">Git and SSH Key Setup</h2><p id="b0aef977-3c7c-4a9b-9f15-25c507884360" class="">Next, it will be helpful if we didn’t have to type in a token or a password each time we want to pull or push to our Git remotes. Therefore, we <em>gotta</em> have SSH keys to git gud [sic].</p><p id="4d90c6c0-5d49-44a6-8cd5-96c7f7e9b565" class="">In the terminal, generate a ssh key by using the following command (replace your email first): </p><pre id="69a48397-4cb6-4155-a245-7ca1f42f1b38" class="code"><code>ssh-keygen -t rsa -b 4096 -C &quot;email@gmail.com&quot;</code></pre><p id="994f0fe3-8132-4c3f-be35-1a5b62d626f6" class="">
+</p><p id="d84b7732-c225-4fc6-811c-59ce664281b3" class="">You will need to press enter to save in the default location, and don’t put in a password unless you want to type it in all the time (an extra layer of security if you want it).</p><p id="b22afbef-9b95-4e85-a207-dd7c0c15b7c8" class="">The output should look like this (if you want the fancy tabbed terminal, install Terminal from MS Store)</p><figure id="7eda170f-2348-41cc-9b5c-2780826d666a" class="image"><a href="Setting%20up%20a%20working%20WSL%20development%20environment%20d7445d8d9c2a472e83e9889a4f92dc5e/21.png"><img style="width:1114px" src="Setting%20up%20a%20working%20WSL%20development%20environment%20d7445d8d9c2a472e83e9889a4f92dc5e/21.png"/></a></figure><p id="5cf6219e-ac2d-4290-9ba3-b0189f802061" class="">
+</p><p id="61ff8d5c-33c5-491b-8cdb-c8959cb654dc" class="">Next, run the following commands to register the ssh key: </p><pre id="a17513bd-4fe9-48e7-8815-cb21347930b6" class="code"><code>eval &quot;$(ssh-agent -s)&quot;; ssh-add ~/.ssh/id_rsa</code></pre><p id="34b492f0-5e64-4ad1-a68b-d0fc1c311de3" class="">Home stretch, now need to add the SSH key to GitHub. Run the following command to print your public key to stdout: <code>cat ~/.ssh/id_rsa.pub</code> </p><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="5f5e4abc-53a6-437f-aac0-930bcfd5c751"><div style="font-size:1.5em"><span class="icon">🚨</span></div><div style="width:100%">There is also a id_rsa in this folder that contains your <em>private</em> key. Never share this file with anyone, it is basically your password.</div></figure><p id="3f6f0c17-38b4-4fa9-9a4e-fde90d8c49ae" class="">Copy the <em>entire</em> output (including ssh-rsa) to your clipboard.</p><p id="8c5d09f9-f043-4323-83d1-c1bf44bcdad0" class="">Pop over to GitHub and navigate to Settings-&gt;SSH &amp; GPG Keys. Click “New SSH Key”. Name it something descriptive, like “Dell Laptop” or something that ties it to your machine. Paste the key into the Key field and click “Add SSH Key”.</p><figure id="1401c9f6-0f90-461b-9a88-37a4b6a5db53" class="image"><a href="Setting%20up%20a%20working%20WSL%20development%20environment%20d7445d8d9c2a472e83e9889a4f92dc5e/20.png"><img style="width:1132px" src="Setting%20up%20a%20working%20WSL%20development%20environment%20d7445d8d9c2a472e83e9889a4f92dc5e/20.png"/></a></figure><p id="18a99c46-375c-4e99-acf0-43ac8bdf15f9" class="">
+</p><p id="3d3d4555-616f-4a66-a637-46c6b79b5934" class="">Go to the terminal now and run the following commands to configure git: </p><pre id="e1f73e41-3abd-48ea-8391-97cec878354f" class="code"><code>git config --global user.email &quot;yourgithubemail@email.com&quot; 
+git config --global user.name &quot;Firstname Lastname&quot;</code></pre><p id="e60fd237-21fc-4a73-9135-d05d9622121f" class="">Now, you should be able to clone, push &amp; pull from Github without a password.</p><h2 id="c84c3d9e-942b-49d7-a667-fa0205ff26e1" class="">Install VS Code and Extensions</h2><p id="3ccd232e-f139-423e-9bf9-19e383eca220" class="">Install VS Code for Windows (don’t install it in the terminal). After it is installed and open, close &amp; reopen the terminal to make sure the PATH environment variable is updated to include VS Code. </p><p id="c5ea4d5d-11ed-4fbd-8d42-6f602edeb1fc" class="">In VS Code, click Extensions on the left hand navigation bar, then type in C/C++ Extension Pack to install the necessary extensions. (It should have 9 extensions included, not just the C/C++ extension).</p><figure id="30bee459-98fa-4b4d-8c86-15e1579a493f" class="image"><a href="Setting%20up%20a%20working%20WSL%20development%20environment%20d7445d8d9c2a472e83e9889a4f92dc5e/14.png"><img style="width:1464px" src="Setting%20up%20a%20working%20WSL%20development%20environment%20d7445d8d9c2a472e83e9889a4f92dc5e/14.png"/></a></figure><p id="d782c365-02bf-4804-bc75-7d6ae461daeb" class="">
+</p><p id="6b185c7a-665b-4830-8d34-ba4d697abb21" class="">Next, hop over into the terminal and navigate to a repo you have cloned. (If you need to clone a repo for a lab or something, go to the repository in Github and click “Code” in the top right, then SSH, then copy that link.</p><figure id="21de4c1e-94db-4060-92b2-f6b23bb389c1" class="image"><a href="Setting%20up%20a%20working%20WSL%20development%20environment%20d7445d8d9c2a472e83e9889a4f92dc5e/9.png"><img style="width:1219px" src="Setting%20up%20a%20working%20WSL%20development%20environment%20d7445d8d9c2a472e83e9889a4f92dc5e/9.png"/></a></figure><p id="fb4c93a5-c829-410e-bad8-5b5152b7ac06" class="">
+</p><p id="dbca43c4-c9cd-4376-a64c-b1cad7a29c4a" class="">Pop back over to your trusty terminal. You probably don’t want to clone repos into your home folder in the terminal, so run the following commands to make a <strong>dev</strong> folder in your home directory.</p><pre id="5980ade6-93ce-4767-a953-438f4c61f233" class="code"><code>cd ~ # CD to home directory (/home/username is equivalent to ~)
+mkdir dev # You should probably know what these commands do by now :)
+cd dev</code></pre><p id="c63a3269-c5d2-4a43-8d3e-b8f52e11955a" class=""> and run the following command with the link you just copied.</p><pre id="90ab5105-5223-4a8c-9178-951dfff39e35" class="code code-wrap"><code>git clone PASTE-LINK-HERE</code></pre><p id="2935e22c-23ae-4a5d-af30-484e30cdc7ff" class="">
+</p><p id="3b4996b5-7f8a-447f-90aa-8a0a659bc6a0" class="">Now cd into the repo you cloned and run the following command to open VS Code.</p><pre id="a9af0ef3-c978-48c0-83a7-5e066e28f72c" class="code code-wrap"><code>code .</code></pre><p id="889bc385-5621-4bfd-b6db-3a9a50e8850b" class="">
+</p><p id="1888561e-f29a-497f-ab8e-831c53e179b5" class="">If it is working properly, you should see similar output:</p><figure id="72d82c9d-8fd9-448a-8f69-5e28f20a2abf" class="image"><a href="Setting%20up%20a%20working%20WSL%20development%20environment%20d7445d8d9c2a472e83e9889a4f92dc5e/16.png"><img style="width:993px" src="Setting%20up%20a%20working%20WSL%20development%20environment%20d7445d8d9c2a472e83e9889a4f92dc5e/16.png"/></a></figure><p id="21aa4313-5ed1-4c9a-a1fc-393caad567ff" class="">
+</p><p id="bf274387-73ba-4977-a89c-7bddf30ea11d" class="">Almost done with the WSL setup, now we just need to install the WSL Extensions inside of the WSL VM. After VS Code comes up, you should see the text “WSL: Ubuntu” in the bottom left corner.</p><p id="0bced042-ad6b-455e-9553-3a4f71488cc5" class="">
+</p><p id="28d97487-8cce-408b-8065-a3848f17e1e4" class="">Go back to the extensions tab, scroll down until you see C/C++ Extension Pack and then click “Install in WSL: Ubuntu”.</p><figure id="d040cecf-39a9-4694-9dd7-c72e7b76c376" class="image"><a href="Setting%20up%20a%20working%20WSL%20development%20environment%20d7445d8d9c2a472e83e9889a4f92dc5e/13.png"><img style="width:316px" src="Setting%20up%20a%20working%20WSL%20development%20environment%20d7445d8d9c2a472e83e9889a4f92dc5e/13.png"/></a></figure><p id="a7c18987-fc2c-40cc-83d1-3661bb24e672" class="">
+</p><p id="75bea479-8c6f-424a-9384-f6f6b19bedd5" class="">We won’t use CMake, so disable CMake and CMake tools in the local extensions.</p><figure id="4ac28aab-efa8-47a3-a830-6a51c8cc37da" class="image"><a href="Setting%20up%20a%20working%20WSL%20development%20environment%20d7445d8d9c2a472e83e9889a4f92dc5e/27.png"><img style="width:1011px" src="Setting%20up%20a%20working%20WSL%20development%20environment%20d7445d8d9c2a472e83e9889a4f92dc5e/27.png"/></a></figure><p id="20e77879-c9b5-4371-9736-5eac8bdbf361" class="">
+</p><h2 id="5318f300-1120-4b64-a301-32ebbf6d5164" class="">Build Tasks and Debugging</h2><h3 id="35bfe62b-d949-4c4b-855f-ba470ec82441" class="">Setup Build Tasks</h3><p id="44425053-0bc0-48c2-911b-bc2fb8fbc5bc" class="">Build tasks are roughly equivalent to the make files that we use in class (e.g. <code>./mk</code>).</p><p id="c6c5d6d6-fafb-49ce-a9f9-f556059149c5" class="">However, they are written in .JSON format instead of bash scripts. To get started, make sure you have your project open in VS Code by using <code>cd</code> to navigate to your repo folder and calling the <code>code .</code> command. (Do this from WSL).</p><p id="95960318-f9b6-4718-837f-cd720289415f" class="">Now make you have your code open in the editor, press <code>F5</code> or click <strong>Run</strong>→<strong>Start Debugging</strong> so we can generate our tasks.json and launch.json files. It will ask you to select an environment: choose C++: GDB/LLDB and then choose <code>gcc - Build and debug active file</code>. This will start debugging, but go ahead and stop the debugger by clicking the red stop button in the top bar.</p><p id="38b724ae-0fe9-4416-8bf8-0f8eb31456bb" class="">
+</p><p id="2adc7dc4-c44c-49b0-a249-a6a5f9133341" class="">In the file explorer on the left, click <code>tasks.json</code> and you should see something like this:</p><p id="52d64f36-daaf-48cb-89b1-0c171be840ca" class="">
+</p><figure id="808d315b-fb37-4fc3-8ebd-ea0c31ab3737" class="image"><a href="Setting%20up%20a%20working%20WSL%20development%20environment%20d7445d8d9c2a472e83e9889a4f92dc5e/30.png"><img style="width:624px" src="Setting%20up%20a%20working%20WSL%20development%20environment%20d7445d8d9c2a472e83e9889a4f92dc5e/30.png"/></a></figure><p id="c3c31197-9fcd-4ffd-9011-b4a8c5826fe0" class="">
+</p><ol type="1" id="cbcd4d79-6441-4b8c-83dd-b7cd71c79e4e" class="numbered-list" start="1"><li>First, we want to change <code>${file}</code> because this would only build the current file (t.c). Sometimes, we need to link multiple .c files (like the command <code>gcc t1.c t2.c t3.c</code> links the 3 .c files). To automatically link any .c files in the folder, replace <code>&quot;${file}&quot;</code> with <code>&quot;${fileDirname}/*.c&quot;</code></li></ol><ol type="1" id="aed4dc20-b3c0-4764-8b01-5db97024f609" class="numbered-list" start="2"><li>We want to replace <code>&quot;${fileDirname}/${fileBasenameNoExtension}&quot;</code> with <code>&quot;${fileDirname}/a.out&quot;</code> because the Auto Grader GitHub script will look for a file with this name. </li></ol><p id="3e1164df-e733-4d06-a8a8-ab9feb1973fb" class="">Don’t forget to save the file! (<code>Ctrl+S</code>).</p><p id="cb0a454f-f473-4695-9cdd-3cc50018dca1" class="">It should look like this now:</p><figure id="7f82d16e-a679-4acc-8d27-3a835ba0c76a" class="image"><a href="Setting%20up%20a%20working%20WSL%20development%20environment%20d7445d8d9c2a472e83e9889a4f92dc5e/31.png"><img style="width:771px" src="Setting%20up%20a%20working%20WSL%20development%20environment%20d7445d8d9c2a472e83e9889a4f92dc5e/31.png"/></a></figure><p id="49d167ae-73be-4287-98ff-5f3215b0aa5a" class="">This task is now equivalent to running the following command:</p><pre id="a604f97e-4705-40b6-8695-cbfe235bce0e" class="code"><code>gcc -fdiagnostics-color=always -g ./*.c -o ./a.out</code></pre><p id="8a5f8029-ac68-4eb6-b799-6cbbd25db8f3" class="">If you need to add another option for gcc, you can do so by adding to this JSON file in the args array. </p><p id="9f69f59e-a2c5-4ce6-9088-94a9a4b8153d" class="">
+</p><p id="1377e99a-6998-4427-ae61-fa82ce4363c6" class="">Now open launch.json from the explorer. Edit <code>&quot;${fileDirname}/${fileBasenameNoExtension}”</code> so that the value is <code>&quot;${fileDirname}/a.out”</code>. This makes it so that the debugger (gdb) can find the a.out file that we create with the build task. It should now look like this:</p><p id="206a2e3a-ddaf-4a8b-b51f-6bdf9e048df1" class="">
+</p><figure id="9471cbe1-0bd8-41ba-8e4b-59896ab7300f" class="image"><a href="Setting%20up%20a%20working%20WSL%20development%20environment%20d7445d8d9c2a472e83e9889a4f92dc5e/32.png"><img style="width:989px" src="Setting%20up%20a%20working%20WSL%20development%20environment%20d7445d8d9c2a472e83e9889a4f92dc5e/32.png"/></a></figure><p id="8a402e1b-8fd4-4e5f-ba58-91c4649e15f1" class="">
+</p><p id="ad6265e4-27c1-45c4-8629-0bdc86f750d2" class="">Last thing, make sure to delete the executable file in your build directory. (In my case, it is just called <code>t</code> because it took the name from <code>t.c</code>. This isn’t necessary because we will be using the name <code>a.out</code>.</p><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="7c9c520a-b9f0-430c-ad95-fae07fb8af85"><div style="font-size:1.5em"><span class="icon">💡</span></div><div style="width:100%">You will need to create these build tasks for each project you work on. You can copy the .vscode folder to any new project and it <em>should</em> provide a consistent experience. </div></figure><h3 id="5b72a9dd-5f92-47e2-a6d2-4864d2320373" class="">Debugging</h3><p id="43d3f056-bb30-4074-a5be-8cc021fa492c" class="">FINALLY, we can start debugging our programs!</p><figure id="7124adf8-efcf-4586-afc2-30772c4926f6" class="image"><a href="Setting%20up%20a%20working%20WSL%20development%20environment%20d7445d8d9c2a472e83e9889a4f92dc5e/33.png"><img style="width:980px" src="Setting%20up%20a%20working%20WSL%20development%20environment%20d7445d8d9c2a472e83e9889a4f92dc5e/33.png"/></a></figure><p id="00451367-e9be-4a41-9590-a11ffb168b56" class=""> </p><ol type="1" id="3fab9382-a68a-4773-8e6a-9fb2771ee0ff" class="numbered-list" start="1"><li>Create a breakpoint in your C code by clicking to the left of the line numbers (1).</li></ol><ol type="1" id="8f3f4bb4-715b-49bc-81c9-efc434c51c3f" class="numbered-list" start="2"><li>Start debugging by pressing <code>F5</code> or clicking the little bug shown in (2)</li></ol><ol type="1" id="44e7a01d-66ae-490e-8ea8-ccc4eb1326f3" class="numbered-list" start="3"><li>It will ask you to choose a build task, choose <code>gcc - Build and debug active file</code></li></ol><p id="a0812830-1f0a-4dac-bb1a-c9b7638f3462" class="">
+</p><p id="ed295e33-fbd3-4faa-b3dd-28e39f7f5436" class=""><strong>Features of Debugger</strong></p><figure id="ab44e555-f1cd-42da-933e-9d65156e5c9f" class="image"><a href="Setting%20up%20a%20working%20WSL%20development%20environment%20d7445d8d9c2a472e83e9889a4f92dc5e/10.png"><img style="width:1090px" src="Setting%20up%20a%20working%20WSL%20development%20environment%20d7445d8d9c2a472e83e9889a4f92dc5e/10.png"/></a></figure><p id="3262f7f6-215c-46ce-a91e-d9c2adb38ea4" class="">
+</p><ol type="1" id="67a24e4f-6be7-45a7-9774-a4bce974494d" class="numbered-list" start="1"><li>This is the toolbar where you can continue, step over, step in, step out, or stop debugging </li></ol><ol type="1" id="dc0fd957-f31c-4316-9899-17399c003696" class="numbered-list" start="2"><li>This is the variables and registers available when debugging. If you want to look at globals, add them to the Watch section (3) </li></ol><ol type="1" id="cc14a2fc-193f-476c-8518-ec364f83cdf9" class="numbered-list" start="3"><li>This is the Watch section. If you want to look at globals, add them here by clicking the plus sign and typing in an expression (variable name, function call, basically any expression.) </li></ol><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="b9977c88-6252-406a-ad38-33577a09ec5a"><div style="font-size:1.5em"><span class="icon">🚨</span></div><div style="width:100%">Careful here, you can segfault by calling a malformed expression or calling expressions early before the local variables are in scope</div></figure><p id="176e4ca1-962b-4187-b292-0fd23e4bf4c7" class="">
+</p><p id="36c5d69f-0ca1-4da1-8ce1-4e171db38dea" class="">There is also cool stuff like conditional breakpoints, the Call Stack visualizer, and other advanced features you can look into.</p><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="ed70fdde-95d4-4ad7-8c09-7aba422fce06"><div style="font-size:1.5em"><span class="icon">💡</span></div><div style="width:100%">Protip: When you make changes to the code, STOP the debugging session and click the bug icon below again to recompile. Restarting the debugging session doesn’t recompile and you will have old code running.</div></figure><p id="5b190ef7-596a-4ad0-89c2-b3edd644631b" class="">
+</p><h2 id="bf83c118-283f-4676-89ba-537468dbff6e" class="">Pushing Changes Back to GitHub</h2><p id="0600921c-e99d-4dcb-b1b6-3ce0735a273c" class="">When your code is ready to go, you can use the integrated terminal in VS code to push your changes to GitHub. First, add all the changes in your repo to the staging area by running this command:</p><pre id="d75c6c00-bc68-4706-81b4-a78b67f36714" class="code"><code>git add .</code></pre><p id="378b9c41-cb80-430a-8bac-6bee6b436b70" class="">
+</p><p id="29d12754-24ff-4d87-9fe2-43b4ab9bd28f" class="">Next, we want to make a commit (or saved snapshot of these changes). You must enter a comment with these commits. Follow the example below:</p><pre id="4d3c0582-822c-4bdd-afb3-09653b34e0dc" class="code"><code>git commit -m &quot;Finished lab, definitely not buggy code I promise!!!1&quot;</code></pre><p id="a4f5c6dd-8f3f-4efa-98fa-e88b10640431" class="">
+</p><p id="2e4c50d4-f9da-4cec-9871-305fe7f8a05b" class="">Finally, push it to the remote (GitHub’s servers in this case) by running the following command:</p><pre id="3c941a58-9762-4aec-b793-abc0b2fdec14" class="code"><code>git push</code></pre><p id="fd570cad-fea9-4b83-86fb-b9ae2c057ae3" class="">
+</p><p id="b86c574a-b19b-4c76-b159-f03a7de52ba1" class="">That’s it, your changes are now stored in GitHub, and your TA’s can grade your code. </p><p id="955d6397-7781-469e-a3dc-2ce2f0385333" class="">
+</p><p id="3ea3f34d-1ff1-45f3-bc59-1b215aca2cf1" class="">Thanks for reading, hope this helps, and best of luck in 360!</p><p id="064dc8f2-b17f-42be-a1f8-4cdcc2984ed3" class="">
+</p><p id="abea7661-1d5f-42de-ba0d-e3589bdb9a3c" class="">
+</p></div></article></body></html>
